@@ -1,0 +1,38 @@
+classdef LightRay2D
+    %{
+        This class contains the information needed to define a light ray in
+        2d
+    %}
+    
+    properties
+        Intensity = 0;
+        Wavelength = 0;
+        XStart = 0;
+        YStart = 0;
+        UnitDirectionVector = [0,0];
+        Equation = linearEquation();
+    end
+    
+    methods
+        function obj = LightRay2D(Intensity,Wavelength,XStart,YStart,UnitDirectionVector)
+            obj.Intensity = Intensity;
+            obj.Wavelength = Wavelength;
+            obj.XStart = XStart;
+            obj.YStart = YStart;
+            obj.UnitDirectionVector = UnitDirectionVector;
+            obj.setEquation();
+        end
+        
+        function obj = setEquation(obj)
+            Start = [obj.XStart,obj.YStart];
+            End = Start + obj.UnitDirectionVector;
+            slopeVector = End - Start
+            obj.Equation.setSlopeVector(slopeVector);
+            d = obj.Equation.getSlopeVector()
+            intercept = Start(1) * slopeVector(1) + Start(2) * slopeVector(2)
+            obj.Equation.setIntercept(intercept)
+            %obj.Equation = linearEquation(Start,End)
+        end
+    end
+end
+

@@ -1,0 +1,59 @@
+%% Driver for 2d model System with modeled light
+
+clc;
+clear;
+
+%% Initalizing variables
+
+wavelength = 256;
+radius = .001;
+nanoFillPercent = 100;
+numberOfLightRaysPer = 20;
+numberOfDetectionPoints = 20;
+attinuation = .95;
+
+%% Initalizing object locations
+
+% Fiber starting locations
+fiberXStart = [0];
+fiberYStart = [0];
+
+% Fiber ending Locations
+fiberXEnd = [.1];
+fiberYEnd = [.001];
+
+% Boundary starting location
+boundXStart = [0];
+boundYStart = [.05];
+
+% Boundary ending location
+boundXEnd = [.1];
+boundYEnd = [.05];
+
+%% Creating objects for the system
+
+fiber(1:length(fiberXStart)) = Fiber2dWithModel([0,0],[0,0],0,0,0,0);
+boundary(1:length(boundXStart)) = linearBoundary([0,0],[0,0],0);
+
+for i = 1:length(fiberXStart)
+    fiber(i) = Fiber2dWithModel([fiberXStart(i),fiberYStart(i)],[fiberXEnd(i),fiberYEnd(i)],radius,wavelength,nanoFillPercent,numberOfLightRaysPer);
+end
+for i = 1:length(boundXStart)
+    boundary(i) = linearBoundary([boundXStart(i),boundYStart(i)],[boundXEnd(i),boundYEnd(i)],numberOfDetectionPoints);
+end
+
+%% Creating the system
+
+system2dWithModel = System(fiber,boundary,attinuation);
+
+%% Collected the detected light data
+
+system2dWithModel.getCollisionData();
+
+%% plotting
+
+figure();
+plot(system2dWithModel.Boundaries(1).DetectedData);
+title('Light intensity at the surface of the boundary');
+xlabel('Detection "bin" from boundary');
+ylabel('

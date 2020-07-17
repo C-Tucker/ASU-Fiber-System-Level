@@ -1,0 +1,59 @@
+classdef Fiber2dWithModel < handle
+    
+    %{
+        This class creates an object that defines a side emitting optical
+        fiber and generates it with the premade mathmatical model of the
+        side emitting light profile
+    %}
+    
+    properties
+        Start = [0,0];
+        End = [0,1];
+        Radius = 0;
+        Wavelength = 0;
+        NanoFillPercent = 0;
+        FiberEquation = 0;
+        NumberOfLightRays = 0;
+        lightVector;
+    end
+    
+    methods
+        function obj = Fiber2dWithModel(Start,End,Radius,Wavelength,NanoFillPercent,NumberOfLightRays)
+            obj.Start = Start;
+            obj.End = End;
+            obj.Radius = Radius;
+            obj.Wavelength = Wavelength;
+            obj.NanoFillPercent = NanoFillPercent;
+            obj.NumberOfLightRays = NumberOfLightRays;
+            obj.FiberEquation = linearEquation;
+            obj = obj.getLightOutputVector();
+        end
+        
+        function obj = getLightOutputVector(obj)
+            output(1:2*obj.NumberOfLightRays) = LightRay2D();
+            slopeVector = obj.End - obj.Start;
+            slopeVector = transpose(slopeVector);
+            unitSlopeVector = slopeVector/norm(slopeVector);
+            stepVector = slopeVector/obj.NumberOfLightRays;
+            lightRaySeperationDist = norm(slopeVector)/obj.NumberOfLightRays;
+            lightSlopeVector = [0,-1;1,0] * unitSlopeVector;
+            lightRayNum = 1;
+            for i = [1,-1]
+                basePositionVector = i * transpose(lightSlopeVector) * obj.Radius + obj.Start;
+                for j = 1:obj.NumberOfLightRays
+                    positionVector = basePositionVector + j * transpose(stepVector);
+                    lightPositionOnFiber = j * lightRaySeperationDist;
+                    lightIntensity = lightPositionOnFiber;
+                    output(lightRayNum).Start = positionVector;
+                    output(lightRayNum).UnitDirectionVector = transpose(i*lightSlopeVector);
+                    output(lightRayNum).Intensity = lightIntensity;
+                    output(lightRayNum).setEquation();
+                    disp(output(lightRayNum))
+                    %output(lightRayNum) = LightRay2D.refreshLightRay(lightIntensity,obj.Wavelength,positionVector(1),positionVector(2),transpose(i*lightSlopeVector));
+                    lightRayNum = lightRayNum + 1;
+                end
+            end
+            obj.lightVector = output;
+        end
+    end
+end
