@@ -1,0 +1,40 @@
+clc;
+clear;
+
+Attenuation = .95;
+
+FiberStartX = [0,0];
+FiberStartY = [0,0];
+FiberStart = [FiberStartX,FiberStartY];
+FiberEndX = [.1];
+FiberEndY = [0];
+FiberEnd = [FiberEndX,FiberEndY];
+FiberRadius = .001;
+NanoFillPercent = 0;
+NumberOfLightRays = 10;
+
+BoundaryStartX = [0];
+BoundaryStartY = [.1];
+BoundaryStart = [BoundaryStartX,BoundaryStartY];
+BoundaryEndX = [.1];
+BoundaryEndY = [.1];
+BoundaryEnd = [BoundaryEndX,BoundaryEndY];
+NumberOfDetectionPoints = 10;
+
+Fibers(1:size(FiberStartX)) = Fiber2dWithModel;
+Boundaries(1:size(BoundaryStartY)) = linearBoundary;
+
+for i = 1:size(Fibers)
+    Fibers(i) = DefineFiber(FiberStart(i,:),FiberEnd(i,:),FiberRadius,NanoFillPercent,NumberOfLightRays);
+end
+
+for i = 1:size(Boundaries)
+    Boundaries(i) = DefineBoundary(BoundaryStart(i,:),FiberEnd(i,:),NumberOfDetectionPoints);
+end
+
+
+Boundaries = ModelLight(Boundaries,Fibers,Attenuation);
+
+DrawSystem(Boundaries,Fibers);
+GraphLightData(Boundaries);
+
