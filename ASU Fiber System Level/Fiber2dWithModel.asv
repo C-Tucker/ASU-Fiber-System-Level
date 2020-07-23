@@ -7,13 +7,14 @@ classdef Fiber2dWithModel < handle
     %}
     
     properties
-        Start = [0,0];
-        End = [0,1];
-        Radius = 0;
-        Wavelength = 0;
-        NanoFillPercent = 0;
-        FiberEquation = 0;
-        NumberOfLightRays = 0;
+        Start;
+        End;
+        Radius;
+        Wavelength;
+        NanoFillPercent;
+        Slope;
+        Intercept;
+        NumberOfLightRays;
         lightVector;
     end
     
